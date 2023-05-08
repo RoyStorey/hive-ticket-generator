@@ -4,8 +4,6 @@ import glob
 import hashlib
 import os
 
-os.remove('./hashedfiles')
-
 filenames = glob.glob("./case-files/*")
 filehashes = []
 

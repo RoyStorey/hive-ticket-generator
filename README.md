@@ -3,7 +3,8 @@ Hive Case Automation made by A1C RDS.
 v1.
 
 1.  Compile all pcaps into a single pcap in arkime, that way you can pull all of the http items and stuff for hashing. This can be done using the arrow in the top right of the Arkime window.
-    a. Save all items into the 'case-files' directory.
+    a. Create a directory named 'case-files' in root.
+    b. Save all pcap items into the 'case-files' directory. NOT THE PCAP ITSELF.
 
 2.  In arkime, export the .csv for all sessions with columns:
     "firstPacket,lastPacket,srcIp,srcGEO,srcPort,dstIp,dstGEO,dstPort,http.uri,communityId",

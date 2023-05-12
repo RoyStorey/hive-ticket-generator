@@ -2,7 +2,8 @@ from datetime import datetime
 import csv
 import glob
 import hashlib
-import os
+import base64
+import datetime
 
 filenames = glob.glob("./case-files/*")
 filehashes = []
@@ -39,14 +40,14 @@ for row in dataFromCSV:
 
 
 
-now = datetime.now()
-dt_string = now.strftime("%m/%d/%Y %H:%M:%S")
+now = datetime.datetime.now()
+print(now)
 
 
 
 
 class formattedHiveCase:
-    timeObserved = dt_string
+    timeObserved = now
     initials = input('Operator Initials:\n')
     sourceIP = ','.join(SrcIP)
     sourcePorts = ','.join(SrcPorts)

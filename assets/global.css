@@ -1,27 +1,92 @@
+:root {
+  --background-color: rgb(24, 24, 24);
+  --hive-yellow: rgb(255, 185, 56);
+  --dark-hive-yellow: rgb(231, 168, 52);
+  --text-color: rgb(255, 255, 255);
+  --secondary-text-color: rgb(0, 0, 0);
+  --output-container-color: rgb(32, 32, 32);
+}
+
 * {
-  background-color: rgb(64, 64, 64);
-  color: rgb(255, 196, 0);
+  color: var(--text-color);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
+
+* body {
+  background-color: var(--background-color);
+
+}
+
 * input {
+  background-color: var(--background-color);
   width: 20%;
 }
-* .content-container {
-  padding: 4rem 16rem;
-  background-color: rgb(255, 162, 0);
-  opacity: 1;
+
+* textarea {
+  background-color: var(--background-color);
+  /* color: rgb(255, 180, 42); */
 }
+
+* .content-container {
+  padding: 4rem 24rem;
+  opacity: 1;
+  display: flex;
+  flex-direction: row;
+  gap: 4rem;
+
+}
+
 * .form-container {
-  /* background-color: rgb(0, 255, 183); */
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 4rem 16rem;
+  padding: 4rem 4rem 1rem 4rem;
+  flex: 1;
+  border: groove 2px white;
+  margin-bottom: 1rem;
 }
+
 * .form-gap {
   display: flex;
   flex-direction: row;
-  /* gap: 1rem; */
+  gap: 1rem;
   justify-content: space-between;
+}
+
+* .output-container {
+  background-color: var(--output-container-color);
+  display: flex;
+  flex: 1;
+  border: groove 2px white;
+  padding: 4rem;
+}
+
+* button {
+  color: var(--secondary-text-color);
+  background: var(--hive-yellow);
+  margin-top: 1rem;
+  padding: 0rem 1rem;
+}
+
+* button:hover {
+  /* color: var(--secondary-text-color); */
+  background: var(--dark-hive-yellow);
+}
+
+* button:active {
+  color: var(--secondary-text-color);
+  background: var(--hive-yellow);
+  margin-top: 1rem;
+  padding: 0rem 1rem;
+}
+
+* #formatted_output {
+  display: flex;
+  flex: 1;
+}
+
+* .upload-div:hover {
+  background: radial-gradient(rgb(54, 54, 54), rgb(63, 63, 63));
+  cursor: pointer;
 }

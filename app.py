@@ -1,4 +1,5 @@
 from datetime import datetime
+import random
 import csv
 import hashlib
 import os
@@ -6,7 +7,7 @@ import glob
 from dash import Dash, html, dcc, Output, Input
 import dash_bootstrap_components as dbc
 import dash_uploader as du
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 csv_data = {
     'start_list': [],
     'stop_list': [],
@@ -19,6 +20,22 @@ csv_data = {
     'uri_list': [],
     'community_id_list': []
 }
+formatted_csv_data = []
+format_information = {
+    'timeObserved': '',
+    'initials': '',
+    'sourceIP': '',
+    'sourcePorts': '',
+    'destinationIP': '',
+    'destinationPorts': '',
+    'communityIds': '',
+    'ids': '',
+    'observableHashes': '',
+    'mitreVectors': '',
+    'suricataAlerts': '',
+    'description': '',
+    'recommendedSolution': '',
+}
 hashes = {}
 UPLOAD_FOLDER_ROOT = 'upload/'
 
@@ -27,8 +44,9 @@ app = Dash(__name__, external_stylesheets=[
 
 du.configure_upload(app, UPLOAD_FOLDER_ROOT, use_upload_id='')
 
-app.layout = html.Div(className='content-container', children=[
+app.layout = html.Div(id='content-container', className='content-container', children=[
     html.Div(children=[
+        html.Button('Change background!', id='background-button', n_clicks=0),
         html.Div(className='form-container', children=[
             html.Div(className='form-gap', children=[
                 html.Label('Operator Initials:'),
@@ -47,8 +65,8 @@ app.layout = html.Div(className='content-container', children=[
                 dcc.Textarea(id='description-input'),
             ]),
             html.Div(className='form-gap', children=[
-                html.Label('Recommended Solution:'),
-                dcc.Textarea(id='solution-input'),
+                html.Label('Recommended Remediation:'),
+                dcc.Textarea(id='remediation-input'),
             ]),
         ]),
         html.Div([
@@ -56,7 +74,7 @@ app.layout = html.Div(className='content-container', children=[
                 text='Click here or Drag a .csv file to upload',
                 id='csv-upload',
                 upload_id=None,
-                filetypes=['csv'],
+                filetypes=['csv']
             ),
         ]),
         html.Div([
@@ -72,9 +90,10 @@ app.layout = html.Div(className='content-container', children=[
     html.Div(className='output-container', children=[
         html.Div(id='formatted-output'),
         html.Div(id='callback-output-1'),
-        html.Div(id='callback-output-2')
+        html.Div(id='callback-output-2'),
+        html.Div(id='callback-output-3'),
     ]),
-])
+], style={'height': '100vh', 'backgroundImage': 'url("./assets/bonkosphere.png', 'filter': 'hue-rotate(44deg)'})
 
 
 @du.callback(
@@ -127,73 +146,34 @@ def hash_observables(status: du.UploadStatus):
     Input('attack-vector-input', 'value'),
     Input('alert-input', 'value'),
     Input('description-input', 'value'),
-    Input('solution-input', 'value'),
+    Input('remediation-input', 'value'),
     Input('submit-button', 'n_clicks')
-
 )
-def update_output(initials, attack_vector, alerts, description, solution, n_clicks):
+def update_output(initials, attack_vector, alerts, description, remediation, n_clicks):
     if n_clicks > 0:
-        return dcc.Textarea(value=f'initials={initials}, vector={attack_vector}, alert={alerts}, description={description}, solution={solution},{str(hashes)}, {str(csv_data)}')
+
+        # removes all duplicates from the dict
+        for key, value in csv_data.items():
+            csv_data[key] = list(set(value))
+        hash_list = ["{} : {}".format(key, value)
+                     for key, value in hashes.items()]
+        string_hash = "\n".join(hash_list)
+        return dcc.Textarea(
+            value=f'**Time Observed:** by: {initials} \n\n**Src IP:** {str(csv_data["src_ip_list"])}\n\n**Src Ports:** {str(csv_data["src_port_list"])}\n\n**Dst IP:** {str(csv_data["dst_ip_list"])}\n\n**Dst Ports:** {str(csv_data["dst_port_list"])}\n\n**Community IDs:**\n{[str(x) for x in csv_data["community_id_list"]]}\n\n**Observable Hashes:**\n{string_hash}\n\n**MITRE Vectors of Attack:**\n{attack_vector}\n\n**Suricata Alerts:**\n{alerts}\n\n**Description:**\n{description}\n\n**Recommended Remediation:**\n{remediation}', style={'display': 'block', 'height': 650, 'width': 715, 'overflowY': 'auto'})
 
 
-# filenames = glob.glob("./case-files/*")
-# filehashes = []
+@app.callback(
+    Output('content-container', 'style'),
+    Input('background-button', 'n_clicks'),
+    State('content-container', 'style')
+)
+def change_background(n_clicks, style):
+    if n_clicks <= 0:
+        return style
+    hue = random.randint(1, 360)
+    style['filter'] = f'hue-rotate({hue}deg)'
+    return style
 
-# i = 1
-# for filename in filenames:
-#     with open(filename, 'rb') as inputfile:
-#         data = inputfile.read()
-#         with open('hashedfiles', 'a') as file:
-#             file.write(hashlib.md5(data).hexdigest() + '\n')
-#             filehashes.append(' ' + str(i) + '. ' +
-#                               hashlib.md5(data).hexdigest())
-#             i = i+1
-
-
-# dataFile = open(r"sessions.csv")
-# dataFromCSV = csv.reader(dataFile, delimiter=',', skipinitialspace=True)
-# j = 1
-# SrcIP, DstIP, SrcPorts, DstPorts, CommIDs = [], [], [], [], []
-# next(dataFromCSV)
-# for row in dataFromCSV:
-#     if ' ' + row[2] not in SrcIP:
-#         SrcIP.append(' ' + row[2])
-#     if ' ' + row[4] not in SrcPorts:
-#         SrcPorts.append(' ' + row[4])
-#     if ' ' + row[5] not in DstIP:
-#         DstIP.append(' ' + row[5])
-#     if ' ' + row[7] not in DstPorts:
-#         DstPorts.append(' ' + row[7])
-#     if str(j) + '. ' + row[9] not in CommIDs:
-#         CommIDs.append(str(j) + '. ' + row[9])
-#         j = j+1
-
-
-# now = datetime.now()
-# dt_string = now.strftime("%m/%d/%Y %H:%M:%S")
-
-# formattedHiveCase = 'test's
-
-
-# class formattedHiveCase:
-#     timeObserved = dt_string
-#     initials = input('Operator Initials:\n')
-#     sourceIP = ','.join(SrcIP)
-#     sourcePorts = ','.join(SrcPorts)
-#     destinationIP = ','.join(DstIP)
-#     destinationPorts = ','.join(DstPorts)
-#     communityIds = '\n'.join(CommIDs)
-#     ids = input('IDs:\n')
-#     observableHashes = '\n'.join(filehashes)
-#     mitreVectors = input('MITRE ATT&CK Vectors:\n')
-#     suricataAlerts = input('Suricata Alerts:\n')
-#     description = input('Description:\n')
-#     recommendedSolution = input('Recommended Solution:\n')
-
-
-# print(formattedHiveCase)
-
-# print("**Time Observed:** ", formattedHiveCase.timeObserved, "by " + formattedHiveCase.initials +  "\n\n**Src IP:** " + formattedHiveCase.sourceIP + "\n**Src Ports:** " + formattedHiveCase.sourcePorts + "\n\n**Dst IP:** " + formattedHiveCase.destinationIP + "\n**Dst Ports:** " + formattedHiveCase.destinationPorts + "\n\n**Community IDs:**\n" + formattedHiveCase.communityIds + "\n\n**IDs:**\n" + formattedHiveCase.ids + "\n\n**Observables/Hashes:**\n" + formattedHiveCase.observableHashes + "\n\n**MITRE Vectors of Attack** " + formattedHiveCase.mitreVectors + "\n\n**Suricata Alerts:** " + formattedHiveCase.suricataAlerts + "\n\n**Description:** " + formattedHiveCase.description + "\n\n**Recommended Solution:** " + formattedHiveCase.recommendedSolution)
 
 if __name__ == '__main__':
     app.run_server(debug=True)

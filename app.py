@@ -130,7 +130,7 @@ def hash_observables(status: du.UploadStatus):
         files = os.listdir('upload/')
         try:
             for file in files:
-                with open(file, 'rb') as f:
+                with open(os.path.join('upload',file), 'rb') as f:
                     data = f.read()
                     sha256 = hashlib.sha256(data).hexdigest()
                     hashes[file] = sha256
@@ -177,3 +177,4 @@ def change_background(n_clicks, style):
 
 if __name__ == '__main__':
     app.run_server(port=HOST_PORT,host=HOST_IP)
+    # app.run_server(debug=True)

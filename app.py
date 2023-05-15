@@ -9,15 +9,10 @@ import dash_bootstrap_components as dbc
 import dash_uploader as du
 from dash.dependencies import Input, Output, State
 csv_data = {
-    'start_list': [],
-    'stop_list': [],
     'src_ip_list': [],
-    'src_country_list': [],
     'src_port_list': [],
     'dst_ip_list': [],
-    'dst_country_list': [],
     'dst_port_list': [],
-    'uri_list': [],
     'community_id_list': []
 }
 formatted_csv_data = []
@@ -108,16 +103,11 @@ def parse_csv(status: du.UploadStatus):
                 reader = csv.reader(file)
                 next(reader)
                 for row in reader:
-                    start_time, stop_time, src_ip, src_country, src_port, dst_ip, dst_country, dst_port, uri, community_id = row
-                    csv_data['start_list'].append(start_time)
-                    csv_data['stop_list'].append(stop_time)
+                    src_ip, src_port, dst_ip, dst_port, community_id = row
                     csv_data['src_ip_list'].append(src_ip)
-                    csv_data['src_country_list'].append(src_country)
                     csv_data['src_port_list'].append(src_port)
                     csv_data['dst_ip_list'].append(dst_ip)
-                    csv_data['dst_country_list'].append(dst_country)
                     csv_data['dst_port_list'].append(dst_port)
-                    csv_data['uri_list'].append(uri)
                     csv_data['community_id_list'].append(community_id)
                 file.close()
                 os.remove(filename[0])

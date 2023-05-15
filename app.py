@@ -4,6 +4,7 @@ import hashlib
 import os
 import glob
 from dash import Dash, html, dcc, Output, Input
+import dash_bootstrap_components as dbc
 import dash_uploader as du
 from dash.dependencies import Input, Output
 csv_data = {
@@ -80,28 +81,29 @@ app.layout = html.Div(className='content-container', children=[
     output=Output('callback-output-1', 'children'),
     id='csv-upload'
 )
-def parse_csv(filenames):
-    filename = glob.glob('upload/*.csv')
-    with open(filename[0], 'r') as file:
-        reader = csv.reader(file)
-        next(reader)
-        for row in reader:
-            start_time, stop_time, src_ip, src_country, src_port, dst_ip, dst_country, dst_port, uri, community_id = row
-            csv_data['start_list'].append(start_time)
-            csv_data['stop_list'].append(stop_time)
-            csv_data['src_ip_list'].append(src_ip)
-            csv_data['src_country_list'].append(src_country)
-            csv_data['src_port_list'].append(src_port)
-            csv_data['dst_ip_list'].append(dst_ip)
-            csv_data['dst_country_list'].append(dst_country)
-            csv_data['dst_port_list'].append(dst_port)
-            csv_data['uri_list'].append(uri)
-            csv_data['community_id_list'].append(community_id)
-        file.close()
-        os.remove(filename[0])
-    #         li = html.Li(src_ip)
-    #         stop_list.append(li)
-    # return html.Ul(start_list)
+def parse_csv(status: du.UploadStatus):
+    if status.is_completed:
+        try:
+            filename = glob.glob('upload/*.csv')
+            with open(filename[0], 'r') as file:
+                reader = csv.reader(file)
+                next(reader)
+                for row in reader:
+                    start_time, stop_time, src_ip, src_country, src_port, dst_ip, dst_country, dst_port, uri, community_id = row
+                    csv_data['start_list'].append(start_time)
+                    csv_data['stop_list'].append(stop_time)
+                    csv_data['src_ip_list'].append(src_ip)
+                    csv_data['src_country_list'].append(src_country)
+                    csv_data['src_port_list'].append(src_port)
+                    csv_data['dst_ip_list'].append(dst_ip)
+                    csv_data['dst_country_list'].append(dst_country)
+                    csv_data['dst_port_list'].append(dst_port)
+                    csv_data['uri_list'].append(uri)
+                    csv_data['community_id_list'].append(community_id)
+                file.close()
+                os.remove(filename[0])
+        except Exception as e:
+            return dbc.Alert(e)
 
 
 @du.callback(
@@ -109,13 +111,14 @@ def parse_csv(filenames):
     id='observable-upload'
 )
 def hash_observables(status: du.UploadStatus):
-    files = os.listdir('upload/')
-    for file in files:
-        with open(file, 'rb') as f:
-            data = f.read()
-            sha256 = hashlib.sha256(data).hexdigest()
-            hashes[file] = sha256
-        os.remove(os.path.join('upload', file))
+    if status.is_completed:
+        files = os.listdir('upload/')
+        for file in files:
+            with open(file, 'rb') as f:
+                data = f.read()
+                sha256 = hashlib.sha256(data).hexdigest()
+                hashes[file] = sha256
+            os.remove(os.path.join('upload', file))
 
 
 @app.callback(
@@ -130,8 +133,6 @@ def hash_observables(status: du.UploadStatus):
 )
 def update_output(initials, attack_vector, alerts, description, solution, n_clicks):
     if n_clicks > 0:
-        # print(csv_data)
-        # print(hashes)
         return dcc.Textarea(value=f'initials={initials}, vector={attack_vector}, alert={alerts}, description={description}, solution={solution},{str(hashes)}, {str(csv_data)}')
 
 

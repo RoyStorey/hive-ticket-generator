@@ -8,6 +8,11 @@ from dash import Dash, html, dcc, Output, Input
 import dash_bootstrap_components as dbc
 import dash_uploader as du
 from dash.dependencies import Input, Output, State
+
+HOST_IP=''
+HOST_PORT=''
+
+
 csv_data = {
     'src_ip_list': [],
     'src_port_list': [],
@@ -171,4 +176,4 @@ def change_background(n_clicks, style):
 
 
 if __name__ == '__main__':
-    app.run_server(port='hostport',ip='hostip')
+    app.run_server(port=HOST_PORT,host=HOST_IP)

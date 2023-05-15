@@ -112,6 +112,7 @@ def parse_csv(status: du.UploadStatus):
                 file.close()
                 os.remove(filename[0])
         except Exception as e:
+            os.remove(filename[0])
             return dbc.Alert(e)
 
 
@@ -122,13 +123,17 @@ def parse_csv(status: du.UploadStatus):
 def hash_observables(status: du.UploadStatus):
     if status.is_completed:
         files = os.listdir('upload/')
-        for file in files:
-            with open(file, 'rb') as f:
-                data = f.read()
-                sha256 = hashlib.sha256(data).hexdigest()
-                hashes[file] = sha256
-            os.remove(os.path.join('upload', file))
-
+        try:
+            for file in files:
+                with open(file, 'rb') as f:
+                    data = f.read()
+                    sha256 = hashlib.sha256(data).hexdigest()
+                    hashes[file] = sha256
+                os.remove(os.path.join('upload', file))
+        except Exception as e:
+            for file in files:
+                os.remove(os.path.join('upload',file))
+            return dbc.Alert(e)
 
 @app.callback(
     Output('formatted-output', 'children'),

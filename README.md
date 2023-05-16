@@ -15,10 +15,7 @@ GUI:
 4.  Compile all pcaps into a single pcap in arkime, that way you can pull all of the http items and stuff for hashing. This can be done using the arrow in the top right of the Arkime window.
     a. Save all observables from the .pcap
     b. Drop all observables into the observable drop area.
-    
 5.  Submit, then copy the output into your hive case.
-
-
 
 CLI:
 
@@ -40,4 +37,12 @@ CLI:
 
 Game.
 
-RDS
+Installation:
+
+1.  In the root directory of the application, execute 'pip install -r requirements.txt'
+
+2.  Edit ./app.py, and replace HOST_PORT and HOST_IP at the bottom with your preferred port and IP.
+
+3.  Execute 'python3 ./app.py'
+
+4.  The website is now running on the port that you specified, and the IP that you specified.

@@ -37,4 +37,12 @@ CLI:
 
 Game.
 
-RDS
+Installation:
+
+1.  In the root directory of the application, execute 'pip install -r requirements.txt'
+
+2.  Edit ./app.py, and replace HOST_PORT and HOST_IP at the bottom with your preferred port and IP.
+
+3.  Execute 'python3 ./app.py'
+
+4.  The website is now running on the port that you specified, and the IP that you specified.

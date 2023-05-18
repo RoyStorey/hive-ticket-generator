@@ -16,7 +16,7 @@
 
 * body {
   background-color: var(--background-color);
-
+  margin: 0px;
 }
 
 * input {
@@ -29,13 +29,17 @@
   /* color: rgb(255, 180, 42); */
 }
 
+* .background {
+  background: linear-gradient(0deg, rgb(15, 15, 15), rgb(48, 48, 48));
+}
+
 * .content-container {
   padding: 4rem 24rem;
   opacity: 1;
   display: flex;
   flex-direction: row;
   gap: 4rem;
-
+  box-sizing: border-box;
 }
 
 * .form-container {
@@ -46,7 +50,6 @@
   padding: 2rem 2rem 1rem 2rem;
   flex: 1;
   border: groove 2px white;
-  margin-bottom: 1rem;
 }
 
 * .form-gap {
@@ -58,10 +61,21 @@
 
 * .output-container {
   background-color: var(--output-container-color);
-  max-height:57vh;
+  /* max-height: 57vh; */
   display: flex;
   flex: 1;
   border: groove 2px white;
+  box-sizing: border-box;
+  padding: 1rem;
+}
+
+* .output-textarea {
+  /* background-color: red; */
+  display: flex;
+  flex: 1;
+  box-sizing: border-box;
+  width: 100%;
+  /* max-width: 100%; */
 }
 
 * button {
@@ -83,7 +97,7 @@
   padding: 0rem 1rem;
 }
 
-* #formatted_output {
+* #formatted-output {
   display: flex;
   flex: 1;
 }
@@ -93,22 +107,40 @@
   cursor: pointer;
 }
 
-input{
-  width: 150px;
-  height:30px;
-}
-.form-container textarea{
-  transition-duration: .5s;
-  width: 150px;
-  height: 40px;
+* .upload-div {
+  width: 100%;
 }
 
-.form-container textarea:focus{
-  transition-duration: .5s;
-  height:200px;
-  width:400px;
+input {
+  width: 150px;
+  height: 30px;
 }
- .dash-uploader-default{
+.form-container textarea {
+  transition-duration: 0.5s;
+  width: 150px;
+  height: 40px;
   box-sizing: border-box;
-  background-color: var(--background-color);
- }
+}
+
+.form-container textarea:focus {
+  transition-duration: 0.5s;
+  height: 200px;
+  width: 400px;
+}
+.dash-uploader-default {
+  box-sizing: border-box;
+}
+
+* .input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: start;
+}
+
+* .buttons-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

@@ -44,9 +44,9 @@ app = Dash(__name__, external_stylesheets=[
 
 du.configure_upload(app, UPLOAD_FOLDER_ROOT, use_upload_id='')
 
-app.layout = html.Div(id='content-container', className='content-container', children=[
-    html.Div(children=[
-        html.Button('Change background!', id='background-button', n_clicks=0),
+app.layout = html.Div(id='content-container', className='content-container background', children=[
+    html.Div(className='input-container',children=[
+        # html.Button('Change background!', id='background-button', n_clicks=0),
         html.Div(className='form-container', children=[
             html.Div(className='form-gap', children=[
                 html.Label('Operator Initials:'),
@@ -69,7 +69,7 @@ app.layout = html.Div(id='content-container', className='content-container', chi
                 dcc.Textarea(id='remediation-input'),
             ]),
         ]),
-        html.Div([
+        html.Div(className='upload-div',children=[
             du.Upload(
                 text='Click here or Drag a .csv file to upload',
                 id='csv-upload',
@@ -77,15 +77,18 @@ app.layout = html.Div(id='content-container', className='content-container', chi
                 filetypes=['csv']
             ),
         ]),
-        html.Div([
+        html.Div(className='upload-div',children=[
             du.Upload(
                 text='Click or Drag an Observable to upload',
                 upload_id=None,
                 max_files=10,
-                id='observable-upload',
+                id='observable-upload'
             ),
         ]),
-        html.Button('Format!', id='submit-button', n_clicks=0),
+        html.Div(className='buttons-wrapper',children=[
+            html.Button('Format!', id='submit-button', n_clicks=0),
+            # html.Button('Copy!', id='copy-button', n_clicks=0)  
+        ])
     ]),
     html.Div(className='output-container', children=[
         html.Div(id='formatted-output'),
@@ -93,7 +96,7 @@ app.layout = html.Div(id='content-container', className='content-container', chi
         html.Div(id='callback-output-2'),
         html.Div(id='callback-output-3'),
     ]),
-], style={'height': '100vh', 'backgroundImage': 'url("./assets/bonkosphere.png', 'filter': 'hue-rotate(44deg)'})
+],style={'height': '100vh'})
 
 
 @du.callback(
@@ -125,6 +128,11 @@ def parse_csv(status: du.UploadStatus):
     output=Output('callback-output-2', 'children'),
     id='observable-upload'
 )
+
+def get_current_time():
+    now = datetime.now()
+    return now
+
 def hash_observables(status: du.UploadStatus):
     if status.is_completed:
         files = os.listdir('upload/')
@@ -158,8 +166,8 @@ def update_output(initials, attack_vector, alerts, description, remediation, n_c
         hash_list = ["{} : {}".format(key, value)
                      for key, value in hashes.items()]
         string_hash = "\n".join(hash_list)
-        return dcc.Textarea(
-            value=f'**Time Observed:** by: {initials} \n\n**Src IP:** {str(csv_data["src_ip_list"])}\n\n**Src Ports:** {str(csv_data["src_port_list"])}\n\n**Dst IP:** {str(csv_data["dst_ip_list"])}\n\n**Dst Ports:** {str(csv_data["dst_port_list"])}\n\n**Community IDs:**\n{[str(x) for x in csv_data["community_id_list"]]}\n\n**Observable Hashes:**\n{string_hash}\n\n**MITRE Vectors of Attack:**\n{attack_vector}\n\n**Suricata Alerts:**\n{alerts}\n\n**Description:**\n{description}\n\n**Recommended Remediation:**\n{remediation}', style={'display': 'block', 'height': 650, 'width': 715, 'overflowY': 'auto'})
+        return (dcc.Textarea(
+            id='output-textarea',className='output-textarea', value=f'**Time Observed:** {get_current_time()  } by: {initials} \n\n**Src IP:** {str(csv_data["src_ip_list"])}\n\n**Src Ports:** {str(csv_data["src_port_list"])}\n\n**Dst IP:** {str(csv_data["dst_ip_list"])}\n\n**Dst Ports:** {str(csv_data["dst_port_list"])}\n\n**Community IDs:**\n{[str(x) for x in csv_data["community_id_list"]]}\n\n**Observable Hashes:**\n{string_hash}\n\n**MITRE Vectors of Attack:**\n{attack_vector}\n\n**Suricata Alerts:**\n{alerts}\n\n**Description:**\n{description}\n\n**Recommended Remediation:**\n{remediation}', style={'display': 'block', 'overflowY': 'auto'}), dcc.Clipboard(target_id="output-textarea",title="copy",style={"display": "inline-block","fontSize": 20,"verticalAlign": "top"}))
 
 
 @app.callback(
@@ -176,5 +184,5 @@ def change_background(n_clicks, style):
 
 
 if __name__ == '__main__':
-    app.run_server(port=HOST_PORT,host=HOST_IP)
+    app.run_server(port='8050',host='172.16.220.110')
     # app.run_server(debug=True)

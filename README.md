@@ -9,7 +9,7 @@ GUI:
 2.  Open 127.0.0.1:8050 in your browser
 
 3.  In arkime, export the .csv for all sessions with columns:
-    "firstPacket,lastPacket,srcIp,srcGEO,srcPort,dstIp,dstGEO,dstPort,http.uri,communityId",
+    "srcIp,srcPort,dstIp,dstPort,communityId",
     Drop it in the .csv drop area.
 
 4.  Compile all pcaps into a single pcap in arkime, that way you can pull all of the http items and stuff for hashing. This can be done using the arrow in the top right of the Arkime window.

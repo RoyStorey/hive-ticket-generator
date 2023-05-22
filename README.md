@@ -1,4 +1,4 @@
-Hive Case Automation made by A1C RDS.
+Hive Case Automation made by A1C RDS && A1C Freeman.
 
 v1.0.
 

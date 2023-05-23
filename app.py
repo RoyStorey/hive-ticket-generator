@@ -8,6 +8,7 @@ from dash import Dash, html, dcc, Output, Input
 import dash_bootstrap_components as dbc
 import dash_uploader as du
 from dash.dependencies import Input, Output, State
+from dash.exceptions import PreventUpdate
 
 HOST_IP = ''
 HOST_PORT = ''
@@ -36,8 +37,9 @@ format_information = {
     'description': '',
     'recommendedSolution': '',
 }
-hashes = {}
 UPLOAD_FOLDER_ROOT = 'upload/'
+
+hashes = {}
 
 app = Dash(__name__, external_stylesheets=[
            '/assets/global.css'], prevent_initial_callbacks=True)
@@ -93,6 +95,7 @@ app.layout = html.Div(id='content-container', className='content-container backg
         html.Div(id='callback-output-1'),
         html.Div(id='callback-output-2'),
         html.Div(id='callback-output-3'),
+        dcc.Location(id='url', refresh=False)
     ]),
 ], style={'height': '100vh'})
 
@@ -124,7 +127,7 @@ def parse_csv(status: du.UploadStatus):
 
 @du.callback(
     output=Output('callback-output-2', 'children'),
-    id='observable-upload'
+    id='observable-upload',
 )
 def hash_observables(status: du.UploadStatus):
     if status.is_completed:
@@ -153,19 +156,27 @@ def get_current_time():
     State('alert-input', 'value'),
     State('description-input', 'value'),
     State('remediation-input', 'value'),
-    Input('submit-button', 'n_clicks')
+    Input('submit-button', 'n_clicks'),
+    Input('url', 'pathname')  # Add this line
 )
-def update_output(initials, attack_vector, alerts, description, remediation, n_clicks):
+def update_output(initials, attack_vector, alerts, description, remediation, n_clicks, url):
     if n_clicks > 0:
+        try:
 
-        # removes all duplicates from the dict
-        for key, value in csv_data.items():
-            csv_data[key] = list(set(value))
-        hash_list = ["{} : {}".format(key, value)
-                     for key, value in hashes.items()]
-        string_hash = "\n".join(hash_list)
-        return (dcc.Textarea(
-            id='output-textarea', className='output-textarea', value=f'**Time Observed:** {get_current_time()  } by: {initials} \n\n**Src IP:** {str(csv_data["src_ip_list"])}\n\n**Src Ports:** {str(csv_data["src_port_list"])}\n\n**Dst IP:** {str(csv_data["dst_ip_list"])}\n\n**Dst Ports:** {str(csv_data["dst_port_list"])}\n\n**Community IDs:**\n{[str(x) for x in csv_data["community_id_list"]]}\n\n**Observable Hashes:**\n{string_hash}\n\n**MITRE Vectors of Attack:**\n{attack_vector}\n\n**Suricata Alerts:**\n{alerts}\n\n**Description:**\n{description}\n\n**Recommended Remediation:**\n{remediation}', style={'display': 'block', 'overflowY': 'auto'}), dcc.Clipboard(target_id="output-textarea", title="copy", style={"display": "inline-block", "fontSize": 20, "verticalAlign": "top"}))
+            # removes all duplicates from the dict
+            for key, value in csv_data.items():
+                csv_data[key] = list(set(value))
+            hash_list = ["{} : {}".format(key, value)
+                         for key, value in hashes.items()]
+            string_hash = "\n".join(hash_list)
+            return dcc.Textarea(
+                id='output-textarea',
+                className='output-textarea',
+                value=f'**Time Observed:** {get_current_time()} by: {initials}\n\n**Src IP:** {str(csv_data["src_ip_list"])}\n\n**Src Ports:** {str(csv_data["src_port_list"])}\n\n**Dst IP:** {str(csv_data["dst_ip_list"])}\n\n**Dst Ports:** {str(csv_data["dst_port_list"])}\n\n**Community IDs:**\n{[str(x) for x in csv_data["community_id_list"]]}\n\n**Observable Hashes:**\n{string_hash}\n\n**MITRE Vectors of Attack:**\n{attack_vector}\n\n**Suricata Alerts:**\n{alerts}\n\n**Description:**\n{description}\n\n**Recommended Remediation:**\n{remediation}',
+                style={'display': 'block', 'overflowY': 'auto'}
+            ), hashes.clear(), csv_data.clear()
+        except Exception as e:
+            print(e)
 
 
 if __name__ == '__main__':

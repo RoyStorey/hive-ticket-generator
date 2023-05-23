@@ -126,11 +126,6 @@ def parse_csv(status: du.UploadStatus):
     output=Output('callback-output-2', 'children'),
     id='observable-upload'
 )
-def get_current_time():
-    now = datetime.now()
-    return now
-
-
 def hash_observables(status: du.UploadStatus):
     if status.is_completed:
         files = os.listdir('upload/')
@@ -144,16 +139,20 @@ def hash_observables(status: du.UploadStatus):
         except Exception as e:
             for file in files:
                 os.remove(os.path.join('upload', file))
-            return dbc.Alert(e)
+
+
+def get_current_time():
+    now = datetime.now()
+    return now
 
 
 @app.callback(
     Output('formatted-output', 'children'),
-    Input('initials-input', 'value'),
-    Input('attack-vector-input', 'value'),
-    Input('alert-input', 'value'),
-    Input('description-input', 'value'),
-    Input('remediation-input', 'value'),
+    State('initials-input', 'value'),
+    State('attack-vector-input', 'value'),
+    State('alert-input', 'value'),
+    State('description-input', 'value'),
+    State('remediation-input', 'value'),
     Input('submit-button', 'n_clicks')
 )
 def update_output(initials, attack_vector, alerts, description, remediation, n_clicks):

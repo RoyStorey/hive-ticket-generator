@@ -47,10 +47,24 @@ app = Dash(__name__, external_stylesheets=[
 du.configure_upload(app, UPLOAD_FOLDER_ROOT, use_upload_id='')
 
 app.layout = html.Div(id='content-container', className='content-container background', children=[
+    html.Div('Instructions',id='instructions-button',className='instructions-button',title='tooltip'),
+    html.Div(className='instructions-page',style={'display': 'none'},id='instructions-page', children=[
+        html.Div('X', className='x-button', id='x-button'),
+        html.H4('STEP 1'),
+        html.P('In arkime, export the .csv for all sessions with columns:'),
+        html.P('"srcIp,srcPort,dstIp,dstPort,communityId".'),
+        html.P('Then, drop it in the .csv drop area.'),
+        html.H4('STEP 2'),
+        html.P('Compile all pcaps into a single pcap in arkime, that way you can pull all of the http items and stuff for hashing. This can be done using the arrow in the top right of the Arkime window.'),
+        html.P('a. Save all observables from the .pcap'),
+        html.P('b. Drop all observables into the observable drop area.'),
+        html.H4('STEP 3'),
+        html.P('Submit, then copy the output into your hive case.'),
+    ]),
     html.Div(className='input-container', children=[
         html.Div(className='form-container', children=[
-            html.Div(className='form-gap', children=[
-                html.Label('Operator Initials:'),
+            html.Div(className='form-gap',children=[
+                html.Label('Operator Initials:',className='tooltip'),
                 dcc.Input(id='initials-input'),
             ]),
             html.Div(className='form-gap', children=[
@@ -99,6 +113,18 @@ app.layout = html.Div(id='content-container', className='content-container backg
     ]),
 ], style={'height': '100vh'})
 
+@app.callback(
+    Output('instructions-page', 'style'),
+    [Input('instructions-button', 'n_clicks'), Input('x-button', 'n_clicks')],
+    [State('instructions-page', 'style')]
+)
+def toggle_instructions_page(instructions_clicks, x_clicks, instructions_style):
+    if instructions_clicks or x_clicks:
+        if instructions_style.get('display') == 'none':
+            instructions_style['display'] = 'block'
+        else:
+            instructions_style['display'] = 'none'
+    return instructions_style
 
 @du.callback(
     output=Output('callback-output-1', 'children'),
@@ -162,12 +188,11 @@ def get_current_time():
 def update_output(initials, attack_vector, alerts, description, remediation, n_clicks, url):
     if n_clicks > 0:
         try:
-
             # removes all duplicates from the dict
             for key, value in csv_data.items():
                 csv_data[key] = list(set(value))
             hash_list = ["{} : {}".format(key, value)
-                         for key, value in hashes.items()]
+                        for key, value in hashes.items()]
             string_hash = "\n".join(hash_list)
             return dcc.Textarea(
                 id='output-textarea',

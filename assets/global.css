@@ -144,3 +144,35 @@ input {
   flex-direction: row;
   justify-content: space-between;
 }
+
+* .instructions-button {
+  position: absolute;
+  right: 4rem;
+  top: 4rem;
+}
+
+* .instructions-button:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+* .instructions-page {
+  display: none;
+  position: absolute;
+  top: 2rem;
+  bottom: 2rem;
+  right: 2rem;
+  width: 18%;
+  background-color: var(--background-color);
+  border: groove 2px white;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+* .x-button {
+  position: absolute;
+  right: 1rem;
+}
+
+* .x-button:hover {
+  cursor: pointer;
+}

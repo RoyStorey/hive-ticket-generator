@@ -191,7 +191,7 @@ def update_output(initials, attack_vector, alerts, description, remediation, n_c
             # removes all duplicates from the dict
             for key, value in csv_data.items():
                 csv_data[key] = list(set(value))
-            hash_list = ["{} : {}".format(key, value)
+            hash_list = ["\n{} : {}".format(key, value)
                 for key, value in hashes.items()]
             string_hash = "\n".join(hash_list)
             formatted_hive_case = dcc.Textarea(

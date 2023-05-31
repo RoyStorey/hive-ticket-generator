@@ -52,7 +52,7 @@ app.layout = html.Div(id='content-container', className='content-container backg
         html.Div('X', className='x-button', id='x-button'),
         html.H4('STEP 1'),
         html.P('In arkime, export the .csv for all sessions with columns:'),
-        html.P('"srcIp,srcPort,dstIp,dstPort,communityId".'),
+        html.P('srcIp,srcPort,dstIp,dstPort,communityId'),
         html.P('Then, drop it in the .csv drop area.'),
         html.H4('STEP 2'),
         html.P('Compile all pcaps into a single pcap in arkime, that way you can pull all of the http items and stuff for hashing. This can be done using the arrow in the top right of the Arkime window.'),

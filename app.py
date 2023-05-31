@@ -10,8 +10,8 @@ import dash_uploader as du
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
-HOST_IP = ''
-HOST_PORT = ''
+HOST_IP = '172.16.220.110'
+HOST_PORT = '8050'
 
 
 csv_data = {
@@ -192,18 +192,26 @@ def update_output(initials, attack_vector, alerts, description, remediation, n_c
             for key, value in csv_data.items():
                 csv_data[key] = list(set(value))
             hash_list = ["{} : {}".format(key, value)
-                        for key, value in hashes.items()]
+                for key, value in hashes.items()]
             string_hash = "\n".join(hash_list)
-            return dcc.Textarea(
+            formatted_hive_case = dcc.Textarea(
                 id='output-textarea',
                 className='output-textarea',
                 value=f'**Time Observed:** {get_current_time()} by: {initials}\n\n**Src IP:** {str(csv_data["src_ip_list"])}\n\n**Src Ports:** {str(csv_data["src_port_list"])}\n\n**Dst IP:** {str(csv_data["dst_ip_list"])}\n\n**Dst Ports:** {str(csv_data["dst_port_list"])}\n\n**Community IDs:**\n{[str(x) for x in csv_data["community_id_list"]]}\n\n**Observable Hashes:**\n{string_hash}\n\n**MITRE Vectors of Attack:**\n{attack_vector}\n\n**Suricata Alerts:**\n{alerts}\n\n**Description:**\n{description}\n\n**Recommended Remediation:**\n{remediation}',
                 style={'display': 'block', 'overflowY': 'auto'}
-            ), hashes.clear(), csv_data.clear()
+            )
+            hashes.clear()
+            csv_data['src_ip_list'].clear()
+            csv_data['src_port_list'].clear()
+            csv_data['dst_ip_list'].clear()
+            csv_data['dst_port_list'].clear()
+            csv_data['community_id_list'].clear()
+            return formatted_hive_case,
+
         except Exception as e:
             print(e)
 
 
 if __name__ == '__main__':
-    # app.run_server(port='8050',host='172.16.220.110')
-    app.run_server(debug=True)
+    app.run_server(port='8050',host='172.16.220.110')
+    #app.run_server(debug=True)
